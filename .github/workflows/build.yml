@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  pull_request:
+
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: gradle  # Используем кэш Gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew  # Даем права на выполнение gradlew
+
+      - name: Build application
+        run: ./gradlew build  # Используем Gradle для сборки
