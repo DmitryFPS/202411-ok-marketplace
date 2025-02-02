@@ -29,3 +29,4 @@ plugins {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":ok-social-network-tmp")
+include(":ok-social-network-front")

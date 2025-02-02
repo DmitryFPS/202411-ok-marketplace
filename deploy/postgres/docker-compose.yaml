@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: "postgres:13"
+    container_name: postgres
+    networks:
+      - local_network
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=db
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./create_schema.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+networks:
+  local_network:
+    name: local_network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
