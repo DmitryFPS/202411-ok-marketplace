@@ -1,0 +1,427 @@
+openapi: 3.0.4
+info:
+  title: "SocialNetwork ${VERSION_APP}"
+  description: It's a place where people communicate with each other
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/v1
+tags:
+  - name: story
+    description: Story (для обмена между пользователями)
+paths:
+  /story/create:
+    post:
+      tags:
+        - story
+      summary: Create story
+      operationId: storyCreate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoryCreateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoryCreateResponse'
+
+  /story/read:
+    post:
+      tags:
+        - story
+      summary: Read story
+      operationId: storyRead
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoryReadRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoryReadResponse'
+
+  /story/update:
+    post:
+      tags:
+        - story
+      summary: Update story
+      operationId: storyUpdate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoryUpdateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoryUpdateResponse'
+
+  /story/delete:
+    post:
+      tags:
+        - story
+      summary: Delete story
+      operationId: storyDelete
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoryDeleteRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoryDeleteResponse'
+
+  /story/find:
+    post:
+      tags:
+        - story
+      summary: Search story
+      operationId: storyFind
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoryFindRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoryFindResponse'
+
+components:
+  schemas:
+
+    IRequest:
+      type: object
+      description: Базовый интерфейс для всех запросов
+      properties:
+        requestType:
+          type: string
+          description: Поле discriminator для вычисления типа запроса
+          example: create
+      discriminator:
+        propertyName: requestType
+        mapping:
+          create: '#/components/schemas/StoryCreateRequest'
+          read: '#/components/schemas/StoryReadRequest'
+          update: '#/components/schemas/StoryUpdateRequest'
+          delete: '#/components/schemas/StoryDeleteRequest'
+          find: '#/components/schemas/StoryFindRequest'
+
+    IResponse:
+      type: object
+      description: Базовый интерфейс для всех ответов
+      properties:
+        responseType:
+          type: string
+          description: Поле discriminator для вычисления типа запроса
+          example: create
+        result:
+          $ref: '#/components/schemas/ResponseResult'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+
+      discriminator:
+        propertyName: responseType
+        mapping:
+          create: '#/components/schemas/StoryCreateResponse'
+          read: '#/components/schemas/StoryReadResponse'
+          update: '#/components/schemas/StoryUpdateResponse'
+          delete: '#/components/schemas/StoryDeleteResponse'
+          find: '#/components/schemas/StoryFindResponse'
+
+    StoryCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/StoryRequestDebug'
+        - type: object
+          properties:
+            story:
+              $ref: '#/components/schemas/StoryCreateObject'
+
+    StoryCreateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseStory'
+        - type: object
+          description: Объект, который возвращается в ответе BH
+          properties:
+            createdAt:
+              $ref: '#/components/schemas/CreatedStoryAt'
+            viewsCount:
+              $ref: '#/components/schemas/ViewsStoryCount'
+          required:
+            - createdAt
+
+    StoryCreateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/StoryResponseSingle'
+
+    StoryResponseSingle:
+      allOf:
+        - type: object
+          description: Ответ с одной Story
+          properties:
+            story:
+              $ref: '#/components/schemas/StoryResponseObject'
+
+    StoryResponseObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseStory'
+        - type: object
+          description: Объект, который возвращается в ответе BH
+          properties:
+            id:
+              $ref: '#/components/schemas/StoryId'
+            ownerId:
+              $ref: '#/components/schemas/UserId'
+            lock:
+              $ref: '#/components/schemas/StoryLock'
+            createdAt:
+              $ref: '#/components/schemas/CreatedStoryAt'
+            viewsCount:
+              $ref: '#/components/schemas/ViewsStoryCount'
+            permissions:
+              type: array
+              uniqueItems: true
+              items:
+                $ref: '#/components/schemas/StoryPermissions'
+
+    StoryReadRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/StoryRequestDebug'
+        - type: object
+          properties:
+            story:
+              $ref: '#/components/schemas/StoryReadObject'
+
+    StoryReadObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/StoryId'
+
+    StoryReadResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/StoryResponseSingle'
+
+    StoryUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/StoryRequestDebug'
+        - type: object
+          properties:
+            story:
+              $ref: '#/components/schemas/StoryUpdateObject'
+
+    StoryUpdateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseStory'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/StoryId'
+            lock:
+              $ref: '#/components/schemas/StoryLock'
+
+    StoryUpdateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/StoryResponseSingle'
+
+    StoryDeleteRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/StoryRequestDebug'
+        - type: object
+          properties:
+            story:
+              $ref: '#/components/schemas/StoryDeleteObject'
+
+    StoryDeleteObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/StoryId'
+            lock:
+              $ref: '#/components/schemas/StoryLock'
+
+    StoryDeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/StoryResponseSingle'
+
+    StoryFindRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/StoryRequestDebug'
+        - type: object
+          properties:
+            storyFilter:
+              $ref: '#/components/schemas/StoryFindFilter'
+
+    StoryFindFilter:
+      type: object
+      description: Набор фильтров для поиска
+      properties:
+        findStorages:
+          $ref: '#/components/schemas/UserId'
+
+    StoryFindResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/StoryResponseMulti'
+
+    StoryResponseMulti:
+      allOf:
+        - type: object
+          description: Список найденных объектов
+          properties:
+            stories:
+              type: array
+              items:
+                $ref: '#/components/schemas/StoryResponseObject'
+
+    StoryId:
+      type: string
+      description: Идентификатор Story
+
+    UserId:
+      type: string
+      description: Идентификатор пользователя
+
+    StoryLock:
+      type: string
+      description: Версия оптимистичной блокировки
+
+    CreatedStoryAt:
+      type: string
+      format: date
+      description: Дата и время создания story
+
+    ViewsStoryCount:
+      type: integer
+      format: int64
+      description: Количество просмотров
+
+    StoryPermissions:
+      type: string
+      description: Доступы для пользователя над операцией над story
+      enum:
+        - read
+        - update
+        - delete
+        - makeVisiblePublic
+        - makeVisiblePrivate
+        - makeVisibleGroup
+
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
+    BaseStory:
+      type: object
+      description: Объект описывает свойства, одинаковые для create и update
+      properties:
+        content:
+          type: string
+          description: Текстовое содержание
+        mediaUrl:
+          type: string
+          description: Ссылка на медиафайл
+        expiresAt:
+          type: string
+          format: date
+          description: Дата и время истечения срока жизни story
+        visibility:
+          $ref: '#/components/schemas/StoryVisibility'
+      required:
+        - content
+        - expiresAt
+
+    StoryVisibility:
+      type: string
+      description: 'Тип видимости Story. Возможные значения: видит только владелец, только зарегистрированный в системе пользователь, видимо всем'
+      enum:
+        - ownerOnly
+        - registeredOnly
+        - public
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        group:
+          type: string
+        field:
+          type: string
+        message:
+          type: string
+
+    # STUBS ======================
+    StoryRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/StoryDebug'
+
+    StoryDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/StoryRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/StoryRequestDebugStubs'
+
+    StoryRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
+
+    StoryRequestDebugStubs:
+      type: string
+      description: Перечисления всех stubs
+      enum:
+        - success
+        - notFound
+        - badId
+        - badContent
+        - cannotDelete
+        - badSearch

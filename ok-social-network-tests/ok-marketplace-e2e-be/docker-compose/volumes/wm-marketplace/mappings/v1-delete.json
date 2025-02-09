@@ -1,0 +1,29 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/story/delete"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "responseType": "delete",
+      "result": "success",
+      "story": {
+        "id": "1",
+        "ownerId": "1",
+        "createdAt": "2025-01-01T00:00:00.000Z",
+        "viewsCount": 0,
+        "content": "text",
+        "mediaUrl": "/img/image.png",
+        "expiresAt": "2026-01-01T00:00:00.000Z",
+        "visibility": "public"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "transformers": [
+      "response-template"
+    ]
+  }
+}

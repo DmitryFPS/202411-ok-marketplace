@@ -1,3 +1,3 @@
 fun main() {
-    println("Social network")
+  println("Social network")
 }
