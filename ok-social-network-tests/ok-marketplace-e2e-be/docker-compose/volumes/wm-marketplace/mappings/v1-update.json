@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/story/update"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "responseType": "update",
+      "result": "success",
+      "story": {
+        "id": "1",
+        "ownerId": "1",
+        "createdAt": "2025-01-01T00:00:00.000Z",
+        "viewsCount": 0,
+        "content": "text",
+        "mediaUrl": "/img/image.png",
+        "expiresAt": "2026-01-01T00:00:00.000Z",
+        "visibility": "public"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
